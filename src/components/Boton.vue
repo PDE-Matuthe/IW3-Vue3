@@ -1,14 +1,30 @@
+<!--
+  Boton.vue
+  ──────────────────────────────────────────────
+  Componente botón genérico reutilizable.
+  Acepta dos variantes visuales (primario y secundario)
+  y un estado de deshabilitado. El contenido interno se
+  inyecta mediante slot para máximo reuso.
+  ──────────────────────────────────────────────
+-->
 <template>
+  <!-- Clase dinámica según la variante: boton--primario | boton--secundario -->
   <button
     :class="['boton', `boton--${variante}`]"
     :disabled="estaDeshabilitado"
     @click="manejarClic"
   >
+    <!-- Slot: permite inyectar texto o elementos hijos desde el padre -->
     <slot />
   </button>
 </template>
 
 <script setup>
+/**
+ * Props del componente Boton.
+ * @property {string} variante - Estilo visual: 'primario' (default) o 'secundario'.
+ * @property {boolean} estaDeshabilitado - Desactiva el botón cuando es true.
+ */
 defineProps({
   variante: {
     type: String,
@@ -21,14 +37,20 @@ defineProps({
   }
 })
 
+// Evento personalizado que se emite al hacer clic
 const emitir = defineEmits(['alHacerClic'])
 
+/**
+ * Manejador del clic: reenvía el evento original al componente padre.
+ * @param {MouseEvent} evento - Evento nativo del DOM.
+ */
 function manejarClic(evento) {
   emitir('alHacerClic', evento)
 }
 </script>
 
 <style scoped>
+/* ── Estilos base del botón ── */
 .boton {
   padding: 0.6rem 1.4rem;
   border-radius: 6px;
@@ -39,7 +61,7 @@ function manejarClic(evento) {
   border: 2px solid transparent;
 }
 
-/* ── Variante: Primario ── */
+/* ── Variante primario: fondo sólido azul, texto blanco ── */
 .boton--primario {
   background-color: #3b82f6;
   color: #ffffff;

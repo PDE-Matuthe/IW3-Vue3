@@ -1,4 +1,19 @@
+<!--
+  Tarjeta.vue
+  ──────────────────────────────────────────────
+  Componente que representa una carta de naipes.
+  Muestra valor, palo (con color distintivo) y la
+  consonante mnemotécnica asociada. Soporta estados
+  boca arriba / boca abajo y selección visual.
+  ──────────────────────────────────────────────
+-->
 <template>
+  <!--
+    Clases dinámicas aplicadas según el estado:
+    - tarjeta--${palo}: color distintivo por palo
+    - tarjeta--boca-abajo: oculta el frente, muestra dorso
+    - tarjeta--seleccionada: borde resaltado de selección
+  -->
   <div
     :class="[
       'tarjeta',
@@ -22,6 +37,14 @@
 </template>
 
 <script setup>
+/**
+ * Tarjeta - Carta de naipes para el entrenador de mnemotecnia.
+ * @property {number} valor - Valor numérico de la carta (1-13).
+ * @property {string} palo - Palo de la carta: 'corazones', 'diamantes', 'tréboles' o 'picas'.
+ * @property {string} letra - Consonante mnemotécnica asociada a la carta.
+ * @property {boolean} bocaArriba - true = muestra frente, false = muestra dorso (default: true).
+ * @property {boolean} estaSeleccionada - Resalta la carta como seleccionada (default: false).
+ */
 const props = defineProps({
   valor: {
     type: Number,
@@ -47,8 +70,14 @@ const props = defineProps({
   }
 })
 
+// Eventos personalizados que puede emitir este componente
 const emitir = defineEmits(['alSeleccionar', 'alVoltear'])
 
+/**
+ * Manejador del clic en la carta.
+ * - Si está boca abajo → emite alVoltear (el padre decide si voltearla).
+ * - Si está boca arriba → emite alSeleccionar con los datos de la carta.
+ */
 function manejarClic() {
   if (!props.bocaArriba) {
     emitir('alVoltear')
@@ -63,6 +92,7 @@ function manejarClic() {
 </script>
 
 <style scoped>
+/* ── Contenedor base de la carta ── */
 .tarjeta {
   width: 120px;
   height: 170px;
@@ -77,7 +107,8 @@ function manejarClic() {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
-/* ── Frente: Palos con color ── */
+/* ── Colores por palo ── */
+/* Cada palo tiene su propio color de fondo, texto y borde */
 .tarjeta--corazones .tarjeta__frente {
   background-color: #fef2f2;
   color: #dc2626;
@@ -125,7 +156,8 @@ function manejarClic() {
   text-transform: uppercase;
 }
 
-/* ── Dorso ── */
+/* ── Dorso de la carta ── */
+/* Fondo con degradado y patrón diagonal cuando la carta está boca abajo */
 .tarjeta--boca-abajo {
   background: linear-gradient(135deg, #1e3a5f 25%, #2563eb 50%, #1e3a5f 75%);
   border: 2px solid #1e3a5f;
@@ -153,13 +185,13 @@ function manejarClic() {
   font-weight: 700;
 }
 
-/* ── Estado: Seleccionada ── */
+/* ── Estado seleccionada: elevación + borde azul brillante ── */
 .tarjeta--seleccionada {
   transform: translateY(-6px);
   box-shadow: 0 0 0 3px #3b82f6, 0 4px 14px rgba(59, 130, 246, 0.4);
 }
 
-/* ── Hover ── */
+/* ── Hover: ligero levantamiento (solo en frente) ── */
 .tarjeta:hover:not(.tarjeta--boca-abajo) {
   transform: translateY(-3px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
