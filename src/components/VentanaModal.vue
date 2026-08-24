@@ -1,0 +1,122 @@
+<!--
+  VentanaModal.vue
+  ──────────────────────────────────────────────
+  Componente de cuadro de diálogo superpuesto (modal).
+  Se renderiza condicionalmente con v-if según la prop
+  "estaAbierto". El contenido dinámico del cuerpo se
+  inyecta mediante slot. El cierre se gestiona desde
+  el padre mediante el evento "alCerrar".
+  ──────────────────────────────────────────────
+-->
+<template>
+  <!--
+    Overlay: cubre toda la pantalla con fondo semitransparente.
+    @click.self asegura que el clic solo se registre en el overlay,
+    no en elementos hijos (evita cierre accidental).
+  -->
+  <div v-if="estaAbierto" class="ventana-modal" @click.self="manejarCierreOverlay">
+    <div class="ventana-modal__cuadro">
+      <!-- Encabezado -->
+      <div class="ventana-modal__encabezado">
+        <h2 class="ventana-modal__titulo">{{ titulo }}</h2>
+        <Boton
+          variante="secundario"
+          class="ventana-modal__boton-cerrar"
+          @alHacerClic="manejarCierre"
+        >
+          ✕
+        </Boton>
+      </div>
+
+      <!-- Cuerpo dinámico -->
+      <div class="ventana-modal__cuerpo">
+        <slot />
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import Boton from './Boton.vue'
+
+/**
+ * VentanaModal - Cuadro de diálogo superpuesto.
+ * @property {boolean} estaAbierto - Controla la visibilidad de la modal.
+ * @property {string} titulo - Texto del encabezado del cuadro de diálogo.
+ */
+defineProps({
+  estaAbierto: {
+    type: Boolean,
+    required: true
+  },
+  titulo: {
+    type: String,
+    required: true
+  }
+})
+
+// Evento emitido cuando el usuario quiere cerrar la modal
+const emitir = defineEmits(['alCerrar'])
+
+/** Cierre por botón ✕: notifica al padre */
+function manejarCierre() {
+  emitir('alCerrar')
+}
+
+/** Cierre por clic en overlay (fuera del cuadro): notifica al padre */
+function manejarCierreOverlay() {
+  emitir('alCerrar')
+}
+</script>
+
+<style scoped>
+/* ── Overlay: cubre toda la pantalla, fondo oscuro semitransparente ── */
+.ventana-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(30, 41, 59, 0.7);
+}
+
+/* ── Cuadro de diálogo: centrado sobre el overlay ── */
+.ventana-modal__cuadro {
+  background-color: #f8fafc;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  width: 90%;
+  max-width: 520px;
+  overflow: hidden;
+}
+
+/* ── Encabezado: título a la izquierda, botón cerrar a la derecha ── */
+.ventana-modal__encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.2rem 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.ventana-modal__titulo {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+/* Botón ✕ con tamaño reducido */
+.ventana-modal__boton-cerrar {
+  padding: 0.3rem 0.7rem;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+/* ── Cuerpo: contenido dinámico inyectado vía slot ── */
+.ventana-modal__cuerpo {
+  padding: 1.5rem;
+  color: #1e293b;
+}
+</style>
